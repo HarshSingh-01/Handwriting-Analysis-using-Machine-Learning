@@ -467,7 +467,7 @@ def extractWords(image, lines):
                 setWordStart = True
         space_zero.extend(spaces[1:-1])
 
-    # Print space_zero
+    # Print(space_zero)
     space_columns = np.sum(space_zero)
     space_count = len(space_zero)
     if(space_count == 0):
