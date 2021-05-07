@@ -288,7 +288,7 @@ def extractLines(img):
                 downHill = False
                 upHill = True
 
-        # Print Anchor Points
+        # print(Anchor Points)
         # We can ignore the contour here
         if(len(anchorPoints)<2):
             continue
@@ -372,7 +372,7 @@ def extractLines(img):
     for i, line in enumerate(fineLines):
         cv2.imshow("line "+str(i), img[line[0]:line[1], : ])
 
-    print ("Average letter size: " + str(average_letter_size))
+    print("Average letter size: " + str(average_letter_size))
     print("Top margin relative to average letter Size: "+ 
     str(relative_top_margin))
     print("Average line spacing ralative to average letter size: "+ str(relative_line_spacing))
@@ -591,8 +591,8 @@ def extractSlant(img, words):
 				'''
 				# just printing
 				if(j==0):
-					print column
-					print str(i)+' h_sq='+str(h_sq)+' h_wted='+str(h_wted)+' num_fgpixel='+str(num_fgpixel)+' delta_y='+str(delta_y)
+					print(column)
+					print(str(i)+' h_sq='+str(h_sq)+' h_wted='+str(h_wted)+' num_fgpixel='+str(num_fgpixel)+' delta_y='+str(delta_y))
 				'''
 				
 				# add up the values from all the loops of ALL the columns of ALL the words in the image
@@ -605,8 +605,8 @@ def extractSlant(img, words):
 				#plt.subplot(),plt.imshow(deslanted),plt.title('Output '+str(i))
 				#plt.show()
 				cv2.imshow('Output '+str(i)+str(j), deslanted)
-				#print vp
-				#print 'line '+str(i)+' '+str(s_temp)
+				#print(vp)
+				#print('line '+str(i)+' '+str(s_temp))
 				#print
 			
 				
@@ -651,7 +651,7 @@ def extractSlant(img, words):
 	elif(max_index == 4):
 		p = s_function[4] / s_function[3]
 		q = s_function[4] / s_function[5]
-		print 'p='+str(p)+' q='+str(q)
+		print('p='+str(p)+' q='+str(q))
 		# the constants here are abritrary but I think suits the best
 		if((p <= 1.2 and q <= 1.2) or (p > 1.4 and q > 1.4)):
 			angle = 0
@@ -665,9 +665,9 @@ def extractSlant(img, words):
 			result =  " : Irregular slant behaviour"
 		
 		if angle == 0:
-			print "Slant determined to be straight."
+			print("Slant determined to be straight.")
 		else:
-			print "Slant determined to be erratic."
+			print("Slant determined to be erratic.")
 		'''
 		type = raw_input("Enter if okay, else enter 'c' to change: ")
 		if type=='c':
@@ -680,7 +680,7 @@ def extractSlant(img, words):
 		'''
 		
 	SLANT_ANGLE = angle
-	print "Slant angle(degree): "+str(SLANT_ANGLE)+result
+	print("Slant angle(degree): "+str(SLANT_ANGLE)+result)
 	return
 
 ''' function to extract average pen pressure of the handwriting '''
@@ -718,9 +718,9 @@ def barometer(image):
 				
 	average_intensity = float(total_intensity) / pixel_count
 	PEN_PRESSURE = average_intensity
-	#print total_intensity
-	#print pixel_count
-	print "Average pen pressure: "+str(average_intensity)
+	#print(total_intensity)
+	#print(pixel_count)
+	print("Average pen pressure: "+str(average_intensity))
 
 	return
 	
@@ -741,15 +741,15 @@ def main():
 	# extract lines of handwritten text from the image using the horizontal projection
 	# it returns a 2D list of the vertical starting and ending index/pixel row location of each line in the handwriting
 	#lineIndices = extractLines(straightened)
-	#print lineIndices
+	#print(lineIndices)
 	#print
 	
 	# extract words from each line using vertical projection
 	# it returns a 4D list of the vertical starting and ending indices and horizontal starting and ending indices (in that order) of each word in the handwriting
 	#wordCoordinates = extractWords(straightened, lineIndices)
 	
-	#print wordCoordinates
-	#print len(wordCoordinates)
+	#print(wordCoordinates)
+	#print(len(wordCoordinates))
 	#for i, item in enumerate(wordCoordinates):
 	#	cv2.imshow('item '+str(i), straightened[item[0]:item[1], item[2]:item[3]])
 	
