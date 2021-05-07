@@ -341,43 +341,46 @@ def extractLines(img):
             lines_having_midzone_count += 1
             flag = False
 
-        # Error Prevention -_-
-        if (lines_having_midzone_count == 0): 
-            lines_having_midzone_count = 1
+    # Error Prevention -_-
+    if (lines_having_midzone_count == 0): 
+        lines_having_midzone_count = 1
 
-        total_space_row_count = space_nonzero_row_count + np.sum(space_zero[1:-1])
-        # Excluding first and last entries: Top and Bottom margins
-        # The number of spaces is 1 less than number of lines ut total_space_row_count
-        # contains the top and bottom spaces of the line.
-        average_line_spacing = float(total_space_row_count)/lines_having_midzone_count
-        average_letter_size = float(midzone_row_count)/lines_having_midzone_count
+    total_space_row_count = space_nonzero_row_count + np.sum(space_zero[1:-1])
+    # Excluding first and last entries: Top and Bottom margins
+    # The number of spaces is 1 less than number of lines ut total_space_row_count
+    # contains the top and bottom spaces of the line.
+    average_line_spacing = float(total_space_row_count)/lines_having_midzone_count
+    average_letter_size = float(midzone_row_count)/lines_having_midzone_count
 
-        # Letter size is actually height of the letter and we are not considering width
-        LETTER_SIZE = average_letter_size
-        # Error prevention -_-
-        if(average_letter_size == 0): average_letter_size = 1
-        # We can't just take the average_line_spacing as a feature directly.
-        # We must take the average_line_spacing relative to average_letter_size.
-        
-        # Let's take the ratio of average_line_spacing to average_letter_size as the 
-        # LINE SPACING, which is perspective to average_letter_size.
-        relative_line_spacing = average_line_spacing/average_letter_size
-        LINE_SPACING = relative_line_spacing
+    # Letter size is actually height of the letter and we are not considering width
+    LETTER_SIZE = average_letter_size
+    # Error prevention -_-
+    if(average_letter_size == 0): average_letter_size = 1
+    # We can't just take the average_line_spacing as a feature directly.
+    # We must take the average_line_spacing relative to average_letter_size.
+    
+    # Let's take the ratio of average_line_spacing to average_letter_size as the 
+    # LINE SPACING, which is perspective to average_letter_size.
+    relative_line_spacing = average_line_spacing/average_letter_size
+    LINE_SPACING = relative_line_spacing
 
-        # Top margin is also taken relative to average letter size of the handwrtting
-        relative_top_margin =  float(topMarginCount)/average_letter_size
-        TOP_MARGIN = relative_top_margin
-        
-        # Showing the final extracted lines.
-        for i, line in enumerate(fineLines):
-            cv2.imshow("line "+str(i), img[line[0]:line[1], : ])
+    # Top margin is also taken relative to average letter size of the handwrtting
+    relative_top_margin =  float(topMarginCount)/average_letter_size
+    TOP_MARGIN = relative_top_margin
+    
+    # Showing the final extracted lines.
+    for i, line in enumerate(fineLines):
+        cv2.imshow("line "+str(i), img[line[0]:line[1], : ])
 
-        print ("Average letter size: " + str(average_letter_size))
-        print("Top margin relative to average letter Size: "+ 
-        str(relative_top_margin))
-        print("Average line spacing ralative to average letter size: "+ str(relative_line_spacing))
+    print ("Average letter size: " + str(average_letter_size))
+    print("Top margin relative to average letter Size: "+ 
+    str(relative_top_margin))
+    print("Average line spacing ralative to average letter size: "+ str(relative_line_spacing))
 
-        return fineLines
+    return fineLines
+
+
+
 
 
 
