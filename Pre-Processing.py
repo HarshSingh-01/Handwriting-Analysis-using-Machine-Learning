@@ -292,7 +292,92 @@ def extractLines(img):
         # We can ignore the contour here
         if(len(anchorPoints)<2):
             continue
-        # len(anchorPoints) > 3 meaning con
+        # len(anchorPoints) > 3 meaning contour composed of multiple lines.
+        lineTop = line[0]
+        for x in range(1, len(anchorPoints)-1, 2):
+            # lineMid is the horizontal index where the segmentation will be done.
+            lineMid = (anchorPoints[x]+anchorPoints[x+1])/2
+            lineBottom = lineMid
+
+            # Line having height of pixels < 20 is considered defects, so we just ignore it
+            # This is a weakness of the algorithm to extract lines 
+            # (anchor value is ANCHOR_POINT, see for different values!)
+            if(lineBottom-lineTop < 20):
+                continue
+            fineLines.append([lineTop, lineBottom])
+            lineTop =  lineBottom
+        if(line[1]-lineTop < 20):
+            continue
+        fineLines.append([lineTop, line[1]])
+
+    # LINE SPACING and LETTER SIZE will be etracted here 
+    # We will count the total number of pixel rows containing upper, 
+    # and lower zones of the lines and add the space_zero/runs of 0's 
+    # (excluding first and last of the list) to it.
+    # We will count the total number of pixel rows containing midzones 
+    # of the lines for letter size.
+
+    # For this, we set an arbitary (yet suitable!) threshold MIDZONE_THRESHOLD = 15000 
+    # in horizontal projection to identify the midzone conatining rows.
+    
+    # These two  total numbers will be divided by umber of lines 
+    # (having at least one row > MIDZONE_THRESHOLD) to find average 
+    # line spacing and average letter size.
+    space_nonzero_row_count = 0
+    midzone_row_count = 0
+    lines_having_midzone_count = 0
+    flag = False
+    for i, line in enumerate(fineLines):
+        segment = hpList[line[0]:line[1]]
+        for j, sum in enumerate(segment):
+            if(sum<MIDZONE_THRESHOLD):
+                space_nonzero_row_count += 1
+            else:
+                midzone_row_count += 1
+                flag = True
+
+        # This line has contributed at least one count of pixel row of midzone.
+        if(flag):
+            lines_having_midzone_count += 1
+            flag = False
+
+        # Error Prevention -_-
+        if (lines_having_midzone_count == 0): 
+            lines_having_midzone_count = 1
+
+        total_space_row_count = space_nonzero_row_count + np.sum(space_zero[1:-1])
+        # Excluding first and last entries: Top and Bottom margins
+        # The number of spaces is 1 less than number of lines ut total_space_row_count
+        # contains the top and bottom spaces of the line.
+        average_line_spacing = float(total_space_row_count)/lines_having_midzone_count
+        average_letter_size = float(midzone_row_count)/lines_having_midzone_count
+
+        # Letter size is actually height of the letter and we are not considering width
+        LETTER_SIZE = average_letter_size
+        # Error prevention -_-
+        if(average_letter_size == 0): average_letter_size = 1
+        # We can't just take the average_line_spacing as a feature directly.
+        # We must take the average_line_spacing relative to average_letter_size.
+        
+        # Let's take the ratio of average_line_spacing to average_letter_size as the 
+        # LINE SPACING, which is perspective to average_letter_size.
+        relative_line_spacing = average_line_spacing/average_letter_size
+        LINE_SPACING = relative_line_spacing
+
+        # Top margin is also taken relative to average letter size of the handwrtting
+        relative_top_margin =  float(topMarginCount)/average_letter_size
+        TOP_MARGIN = relative_top_margin
+        
+        # Showing the final extracted lines.
+        for i, line in enumerate(fineLines):
+            cv2.imshow("line "+str(i), img[line[0]:line[1], : ])
+
+        print ("Average letter size: " + str(average_letter_size))
+        print("Top margin relative to average letter Size: "+ 
+        str(relative_top_margin))
+        print("Average line spacing ralative to average letter size: "+ str(relative_line_spacing))
+
+        return fineLines
 
 
 
