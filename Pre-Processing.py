@@ -480,8 +480,286 @@ def extractWords(image, lines):
 
     return words
 
+# Function to determine the average slant of the handwriting.
+def extractSlant(img, words):
+	
+	global SLANT_ANGLE
+	'''
+	0.01 radian = 0.5729578 degree :: I had to put this instead of 0.0 becuase there was a bug yeilding inacurate value which I could not figure out!
+	5 degree = 0.0872665 radian :: Hardly noticeable or a very little slant
+	15 degree = 0.261799 radian :: Easily noticeable or average slant
+	30 degree = 0.523599 radian :: Above average slant
+	45 degree = 0.785398 radian :: Extreme slant
+	'''
+	# We are checking for 9 different values of angle
+	theta = [-0.785398, -0.523599, -0.261799, -0.0872665, 0.01, 0.0872665, 0.261799, 0.523599, 0.785398]
+	#theta = [-0.785398, -0.523599, -0.436332, -0.349066, -0.261799, -0.174533, -0.0872665, 0, 0.0872665, 0.174533, 0.261799, 0.349066, 0.436332, 0.523599, 0.785398]
 
+	# Corresponding index of the biggest value will be the index of the most likely angle in 'theta'
+	s_function = [0.0] * 9
+	count_ = [0]*9
+	
+	# apply bilateral filter
+	filtered = bilateralFilter(img, 5)
+	
+	# convert to grayscale and binarize the image by INVERTED binary thresholding
+	# it's better to clear unwanted dark areas at the document left edge and use a high threshold value to preserve more text pixels
+	thresh = threshold(filtered, 180)
+	#cv2.imshow('thresh', lthresh)
+	
+	# loop for each value of angle in theta
+	for i, angle in enumerate(theta):
+		s_temp = 0.0 # overall sum of the functions of all the columns of all the words!
+		count = 0 # just counting the number of columns considered to contain a vertical stroke and thus contributing to s_temp
+		
+		#loop for each word
+		for j, word in enumerate(words):
+			original = thresh[word[0]:word[1], word[2]:word[3]] # y1:y2, x1:x2
 
+			height = word[1]-word[0]
+			width = word[3]-word[2]
+			
+			# the distance in pixel we will shift for affine transformation
+			# it's divided by 2 because the uppermost point and the lowermost points are being equally shifted in opposite directions
+			shift = (math.tan(angle) * height) / 2
+			
+			# the amount of extra space we need to add to the original image to preserve information
+			# yes, this is adding more number of columns but the effect of this will be negligible
+			pad_length = abs(int(shift))
+			
+			# create a new image that can perfectly hold the transformed and thus widened image
+			blank_image = np.zeros((height,width+pad_length*2,3), np.uint8)
+			new_image = cv2.cvtColor(blank_image, cv2.COLOR_BGR2GRAY)
+			new_image[:, pad_length:width+pad_length] = original
+			
+			# points to consider for affine transformation
+			(height, width) = new_image.shape[:2]
+			x1 = width/2
+			y1 = 0
+			x2 = width/4
+			y2 = height
+			x3 = 3*width/4
+			y3 = height
+	
+			pts1 = np.float32([[x1,y1],[x2,y2],[x3,y3]])
+			pts2 = np.float32([[x1+shift,y1],[x2-shift,y2],[x3-shift,y3]])
+			M = cv2.getAffineTransform(pts1,pts2)
+			deslanted = cv2.warpAffine(new_image,M,(width,height))
+			
+			# find the vertical projection on the transformed image
+			vp = verticalProjection(deslanted)
+			
+			# loop for each value of vertical projection, which is for each column in the word image
+			for k, sum in enumerate(vp):
+				# the columns is empty
+				if(sum == 0):
+					continue
+				
+				# this is the number of foreground pixels in the column being considered
+				num_fgpixel = sum / 255
+
+				# if number of foreground pixels is less than onethird of total pixels, it is not a vertical stroke so we can ignore
+				if(num_fgpixel < int(height/3)):
+					continue
+				
+				# the column itself is extracted, and flattened for easy operation
+				column = deslanted[0:height, k:k+1]
+				column = column.flatten()
+				
+				# now we are going to find the distance between topmost pixel and bottom-most pixel
+				# l counts the number of empty pixels from top until and upto a foreground pixel is discovered
+				for l, pixel in enumerate(column):
+					if(pixel==0):
+						continue
+					break
+				# m counts the number of empty pixels from bottom until and upto a foreground pixel is discovered
+				for m, pixel in enumerate(column[::-1]):
+					if(pixel==0):
+						continue
+					break
+				
+				# the distance is found as delta_y, I just followed the naming convention in the research paper I followed
+				delta_y = height - (l+m)
+			
+				# please refer the research paper for more details of this function, anyway it's nothing tricky
+				h_sq = (float(num_fgpixel)/delta_y)**2
+				
+				# I am multiplying by a factor of num_fgpixel/height to the above function to yeild better result
+				# this will also somewhat negate the effect of adding more columns and different column counts in the transformed image of the same word
+				h_wted = (h_sq * num_fgpixel) / height
+
+				'''
+				# just printing
+				if(j==0):
+					print column
+					print str(i)+' h_sq='+str(h_sq)+' h_wted='+str(h_wted)+' num_fgpixel='+str(num_fgpixel)+' delta_y='+str(delta_y)
+				'''
+				
+				# add up the values from all the loops of ALL the columns of ALL the words in the image
+				s_temp += h_wted
+				
+				count += 1
+			
+			
+			if(j==0):
+				#plt.subplot(),plt.imshow(deslanted),plt.title('Output '+str(i))
+				#plt.show()
+				cv2.imshow('Output '+str(i)+str(j), deslanted)
+				#print vp
+				#print 'line '+str(i)+' '+str(s_temp)
+				#print
+			
+				
+		s_function[i] = s_temp
+		count_[i] = count
+	
+	# finding the largest value and corresponding index
+	max_value = 0.0
+	max_index = 4
+	for index, value in enumerate(s_function):
+		print str(index)+" "+str(value)+" "+str(count_[index])
+		if(value > max_value):
+			max_value = value
+			max_index = index
+			
+	# We will add another value 9 manually to indicate irregular slant behaviour.
+	# This will be seen as value 4 (no slant) but 2 corresponding angles of opposite sign will have very close values.
+	if(max_index == 0):
+		angle = 45
+		result =  " : Extremely right slanted"
+	elif(max_index == 1):
+		angle = 30
+		result = " : Above average right slanted"
+	elif(max_index == 2):
+		angle = 15
+		result = " : Average right slanted"
+	elif(max_index == 3):
+		angle = 5
+		result = " : A little right slanted"
+	elif(max_index == 5):
+		angle = -5
+		result = " : A little left slanted"
+	elif(max_index == 6):
+		angle = -15
+		result = " : Average left slanted"
+	elif(max_index == 7):
+		angle = -30
+		result = " : Above average left slanted"
+	elif(max_index == 8):
+		angle = -45
+		result = " : Extremely left slanted"
+	elif(max_index == 4):
+		p = s_function[4] / s_function[3]
+		q = s_function[4] / s_function[5]
+		print 'p='+str(p)+' q='+str(q)
+		# the constants here are abritrary but I think suits the best
+		if((p <= 1.2 and q <= 1.2) or (p > 1.4 and q > 1.4)):
+			angle = 0
+			result = " : No slant"
+		elif((p <= 1.2 and q-p > 0.4) or (q <= 1.2 and p-q > 0.4)):
+			angle = 0
+			result = " : No slant"
+		else:
+			max_index = 9
+			angle = 180
+			result =  " : Irregular slant behaviour"
+		
+		if angle == 0:
+			print "Slant determined to be straight."
+		else:
+			print "Slant determined to be erratic."
+		'''
+		type = raw_input("Enter if okay, else enter 'c' to change: ")
+		if type=='c':
+			if angle == 0:
+				angle = 180
+				result =  " : Irregular slant behaviour"
+			else:
+				angle = 0
+				result = " : No slant"
+		'''
+		
+	SLANT_ANGLE = angle
+	print "Slant angle(degree): "+str(SLANT_ANGLE)+result
+	return
+
+''' function to extract average pen pressure of the handwriting '''
+def barometer(image):
+
+	global PEN_PRESSURE
+
+	# it's extremely necessary to convert to grayscale first
+	image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+	# inverting the image pixel by pixel individually. This costs the maximum time and processing in the entire process!
+	h, w = image.shape[:]
+	inverted = image
+	for x in range(h):
+		for y in range(w):
+			inverted[x][y] = 255 - image[x][y]
+	
+	cv2.imshow('inverted', inverted)
+	
+	# bilateral filtering
+	filtered = bilateralFilter(inverted, 3)
+	
+	# binary thresholding. Here we use 'threshold to zero' which is crucial for what we want.
+	# If src(x,y) is lower than threshold=100, the new pixel value will be set to 0, else it will be left untouched!
+	ret, thresh = cv2.threshold(filtered, 100, 255, cv2.THRESH_TOZERO)
+	cv2.imshow('thresh', thresh)
+	
+	# add up all the non-zero pixel values in the image and divide by the number of them to find the average pixel value in the whole image
+	total_intensity = 0
+	pixel_count = 0
+	for x in range(h):
+		for y in range(w):
+			if(thresh[x][y] > 0):
+				total_intensity += thresh[x][y]
+				pixel_count += 1
+				
+	average_intensity = float(total_intensity) / pixel_count
+	PEN_PRESSURE = average_intensity
+	#print total_intensity
+	#print pixel_count
+	print "Average pen pressure: "+str(average_intensity)
+
+	return
+	
+''' main '''
+def main():
+	# read image from disk
+	image = cv2.imread('images/007-0.png')
+	cv2.imshow('image',image)
+	
+	# Extract pen pressure. It's such a cool function name!
+	#barometer(image)
+
+	# apply contour operation to straighten the contours which may be a single line or composed of multiple lines
+	# the returned image is straightened version of the original image without filtration and binarization
+	straightened = straighten(image)
+	cv2.imshow('straightened',straightened)
+	
+	# extract lines of handwritten text from the image using the horizontal projection
+	# it returns a 2D list of the vertical starting and ending index/pixel row location of each line in the handwriting
+	#lineIndices = extractLines(straightened)
+	#print lineIndices
+	#print
+	
+	# extract words from each line using vertical projection
+	# it returns a 4D list of the vertical starting and ending indices and horizontal starting and ending indices (in that order) of each word in the handwriting
+	#wordCoordinates = extractWords(straightened, lineIndices)
+	
+	#print wordCoordinates
+	#print len(wordCoordinates)
+	#for i, item in enumerate(wordCoordinates):
+	#	cv2.imshow('item '+str(i), straightened[item[0]:item[1], item[2]:item[3]])
+	
+	# extract average slant angle of all the words containing a long vertical stroke
+	#extractSlant(straightened, wordCoordinates)
+	
+	cv2.waitKey(0)
+	return
+	
+main()
 
 
 
