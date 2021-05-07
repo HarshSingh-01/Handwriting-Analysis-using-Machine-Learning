@@ -379,6 +379,115 @@ def extractLines(img):
 
     return fineLines
 
+# Function to extract words from the lines using vertical projection.
+def extractWords(image, lines):
+    global LETTER_SIZE 
+    global WORD_SPACING
+
+    # Apply bilateral filter
+    filtered = bilateralFilter(image, 5)
+
+    # Convert to grayscale and binarize the image by INVERTED binary thresholding 
+    thresh = threshold(filtered, 180)
+    # cv2.imshow('thresh', thresh)
+
+    # Width of the whole document is found once.
+    width = thresh.shape[1]
+    space_zero = []
+    words = []
+
+    # Isolated words or components will be extracted fro each line by looking at occurance of 0's
+    # in its vertical projection.
+    for i, line in enumerate(lines):
+        extract = thresh[line[0]:line[1], 0:width]
+        vp = verticalProjection(extract)
+
+        wordStart = 0
+        wordEnd = 0
+        spaceStart = 0
+        spaceEnd = 0
+        indexCount = 0
+        setWordStart = True
+        setSpaceStart = True
+        includeNextSpace = True
+        spaces = []
+
+        # We are scanning the vertical projection.
+        for j, sum in enumerate(vp):
+            # Sum being 0 means blank space.
+            if (sum==0):
+                if (setSpaceStart):
+                    spaceStart = indexCount
+                    setSpaceStart = False
+
+                # spaceStart will be set once for each start of a space between lines.
+                indexCount += 1
+                spaceEnd = indexCount
+                if(j< len(vp)-1):
+                    # This condition is necessary to avoid array index out of bound error.
+                    if (vp[j+1]==0):
+                        # If the next vertical projection is 0, keep on counting, 
+                        # it's still in blank space.
+                        continue
+                    
+                # We ignore spaces which is smaller than half the average letter size.
+                if ((spaceEnd-spaceStart)>int(LETTER_SIZE/2)):
+                    spaces.append(spaceEnd - spaceStart)
+                # Next time we encounter 0, it's being of another space so we set new spaceStart.
+                setSpacesStart = True
+
+            if(sum>0):
+                if(setWordStart):
+                    wordStart = indexCount
+                    setWordStart = False
+
+                # wordStart will be set once for each start of a new word/component.
+                indexCount += 1
+                wordEnd = indexCount
+                if(j<len(vp)-1):
+                    # This condition is necessary to avoid array index out of bound error.
+                    if(vp[j+1]>0):
+                        # If the next horizontal projection is > 0, keep on counting, 
+                        # it's still in non-space zone.
+                        continue
+
+                # Append the coordinates of each word/component: y1, y2, x1, x2 in 'words'
+                # We ignore the ones which has height smaller than half the average letter size.
+                # This will remove full stops and commas as an individual component
+                count = 0
+                for k in range(line[1]-line[0]):
+                    row = thresh[line[0]+k : line[0]+k+1, wordStart:wordEnd]
+                    if(np.sum(row)):
+                        count += 1
+                if (count > int(LETTER_SIZE/2)):
+                    words.append([line[0], line[1], wordStart, wordEnd])
+
+                # Next time we encounter value > 0, it's begining of another word/component 
+                # so we set new wordStart
+                setWordStart = True
+        space_zero.extend(spaces[1:-1])
+
+    # Print space_zero
+    space_columns = np.sum(space_zero)
+    space_count = len(space_zero)
+    if(space_count == 0):
+        space_count = 1
+    average_word_spacing = float(space_columns)/ space_count
+    relative_word_spacing = average_word_spacing/LETTER_SIZE
+    WORD_SPACING = relative_word_spacing
+    # print("Average word spacing: "+str(average_word_spacing))
+    print("Average word spacing relative to average letter size: " + str(relative_word_spacing))
+
+    return words
+
+
+
+
+
+
+               
+
+
 
 
 
