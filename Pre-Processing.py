@@ -617,11 +617,8 @@ def extractSlant(img, words):
 	max_value = 0.0
 	max_index = 4
 	for index, value in enumerate(s_function):
-<<<<<<< HEAD
-		print(str(index)+" "+str(value)+" "+str(count_[index])
-=======
 		print(str(index)+" "+str(value)+" "+str(count_[index]))
->>>>>>> Harshu
+
 		if(value > max_value):
 			max_value = value
 			max_index = index
