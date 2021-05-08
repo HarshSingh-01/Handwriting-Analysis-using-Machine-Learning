@@ -373,7 +373,6 @@ def extractLines(img):
     # Showing the final extracted lines.
     for i, line in enumerate(fineLines):
         cv2.imshow("line "+str(i), img[line[0]:line[1], : ])
-        
     # Letter size is actually height of the letter and we are not considering width
     LETTER_SIZE = average_letter_size
 
