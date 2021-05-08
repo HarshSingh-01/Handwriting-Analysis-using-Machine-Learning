@@ -25,7 +25,7 @@ def bilateralFilter(image, d):
 
 # Function for median filtering.
 def medianFliter(image, d):
-    image = cv2.medianBlur(image, d):
+    image = cv2.medianBlur(image, d)
     return image
 
 # Function for Inverted binary threshold.
