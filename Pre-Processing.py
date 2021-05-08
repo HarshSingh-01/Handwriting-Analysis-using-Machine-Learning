@@ -4,6 +4,7 @@
 import cv2
 import numpy as np
 import math
+from PIL import Image
 
 # Some temp variables that are not needed
 ANCHOR_POINT = 6000
@@ -36,13 +37,13 @@ def threshold(image, d):
 
 # Function for dilation of objects in the image.
 def dilate(image, Ksize):
-    kernel = np.ones(Ksize, np.unit8)
+    kernel = np.ones(Ksize, np.uint8)
     image = cv2.dilate(image, kernel, iterations = 1)
     return image
 
 # Function for erosion of objects in the image.
 def erode(image, Ksize):
-    kernel = np.ones(Ksize, np.unit8)
+    kernel = np.ones(Ksize, np.uint8)
     image = cv2.erode(image, kernel, iterations=1)
     return image
 
@@ -72,7 +73,7 @@ def straighten(image):
     dilated = dilate(thresh, (5, 100))
     cv2.imshow('dilated', dilated)
 
-    im2, ctrs, hier = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    ctrs,im2 = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     for i, ctr in enumerate(ctrs):
         x, y, w, h = cv2.boundingRect(ctr)
@@ -349,13 +350,14 @@ def extractLines(img):
     # Excluding first and last entries: Top and Bottom margins
     # The number of spaces is 1 less than number of lines ut total_space_row_count
     # contains the top and bottom spaces of the line.
-    average_line_spacing = float(total_space_row_count)/lines_having_midzone_count
-    average_letter_size = float(midzone_row_count)/lines_having_midzone_count
+    average_line_spacing = float(total_space_row_count) / lines_having_midzone_count 
+    average_letter_size = float(midzone_row_count) / lines_having_midzone_count
+    
+    # print("Look here---->",average_letter_size)
 
-    # Letter size is actually height of the letter and we are not considering width
-    LETTER_SIZE = average_letter_size
     # Error prevention -_-
     if(average_letter_size == 0): average_letter_size = 1
+    
     # We can't just take the average_line_spacing as a feature directly.
     # We must take the average_line_spacing relative to average_letter_size.
     
@@ -371,6 +373,9 @@ def extractLines(img):
     # Showing the final extracted lines.
     for i, line in enumerate(fineLines):
         cv2.imshow("line "+str(i), img[line[0]:line[1], : ])
+        
+    # Letter size is actually height of the letter and we are not considering width
+    LETTER_SIZE = average_letter_size
 
     print("Average letter size: " + str(average_letter_size))
     print("Top margin relative to average letter Size: "+ 
@@ -381,7 +386,7 @@ def extractLines(img):
 
 # Function to extract words from the lines using vertical projection.
 def extractWords(image, lines):
-    global LETTER_SIZE 
+    global LETTER_SIZE
     global WORD_SPACING
 
     # Apply bilateral filter
@@ -472,8 +477,8 @@ def extractWords(image, lines):
     space_count = len(space_zero)
     if(space_count == 0):
         space_count = 1
-    average_word_spacing = float(space_columns)/ space_count
-    relative_word_spacing = average_word_spacing/LETTER_SIZE
+    average_word_spacing = float(space_columns) / space_count
+    relative_word_spacing = average_word_spacing / LETTER_SIZE
     WORD_SPACING = relative_word_spacing
     # print("Average word spacing: "+str(average_word_spacing))
     print("Average word spacing relative to average letter size: " + str(relative_word_spacing))
@@ -727,55 +732,38 @@ def barometer(image):
 	
 ''' main '''
 def main():
-	# read image from disk
-	image = cv2.imread('images/007-0.png')
-	cv2.imshow('image',image)
-	
-	# Extract pen pressure. It's such a cool function name!
-	#barometer(image)
+    # read image from disk
+    image = cv2.imread("Test Images/a01-000x.png")
+    image = cv2.resize(image, (700,700))
+    cv2.imshow('image', image)
+    
+    # Extract pen pressure. It's such a cool function name!
+    #barometer(image)
 
-	# apply contour operation to straighten the contours which may be a single line or composed of multiple lines
-	# the returned image is straightened version of the original image without filtration and binarization
-	straightened = straighten(image)
-	cv2.imshow('straightened',straightened)
-	
-	# extract lines of handwritten text from the image using the horizontal projection
-	# it returns a 2D list of the vertical starting and ending index/pixel row location of each line in the handwriting
-	#lineIndices = extractLines(straightened)
-	#print(lineIndices)
-	#print
-	
-	# extract words from each line using vertical projection
-	# it returns a 4D list of the vertical starting and ending indices and horizontal starting and ending indices (in that order) of each word in the handwriting
-	#wordCoordinates = extractWords(straightened, lineIndices)
-	
-	#print(wordCoordinates)
-	#print(len(wordCoordinates))
-	#for i, item in enumerate(wordCoordinates):
-	#	cv2.imshow('item '+str(i), straightened[item[0]:item[1], item[2]:item[3]])
-	
-	# extract average slant angle of all the words containing a long vertical stroke
-	#extractSlant(straightened, wordCoordinates)
-	
-	cv2.waitKey(0)
-	return
-	
+    # apply contour operation to straighten the contours which may be a single line or composed of multiple lines
+    # the returned image is straightened version of the original image without filtration and binarization
+    straightened = straighten(image)
+    # cv2.imshow('straightened',straightened)
+    
+    # extract lines of handwritten text from the image using the horizontal projection
+    # it returns a 2D list of the vertical starting and ending index/pixel row location of each line in the handwriting
+    lineIndices = extractLines(straightened)
+    print(lineIndices)
+    #print
+    
+    # extract words from each line using vertical projection
+    # it returns a 4D list of the vertical starting and ending indices and horizontal starting and ending indices (in that order) of each word in the handwriting
+    wordCoordinates = extractWords(straightened, lineIndices)
+    
+    print(wordCoordinates)
+    print(len(wordCoordinates))
+    for i, item in enumerate(wordCoordinates):
+    	cv2.imshow('item '+str(i), straightened[item[0]:item[1], item[2]:item[3]])
+    
+    # extract average slant angle of all the words containing a long vertical stroke
+    extractSlant(straightened, wordCoordinates)
+    
+    cv2.waitKey(0)
+    return
+    
 main()
-
-
-
-               
-
-
-
-
-
-
-
-                        
-
-
-
-
-
-
