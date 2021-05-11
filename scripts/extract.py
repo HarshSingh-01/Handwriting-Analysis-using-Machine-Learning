@@ -45,112 +45,81 @@ def erode(image, kernalSize):
     image = cv2.erode(image, kernel, iterations=1)
     return image
     
-''' function for finding contours and straightening them horizontally. Straightened lines will give better result with horizontal projections. '''
+# Function for finding contours and straightening them horizontally. 
+# Straightened lines will give better result with horizontal projections. 
 def straighten(image):
-
     global BASELINE_ANGLE
-    
+
     angle = 0.0
     angle_sum = 0.0
-    contour_count = 0
-    
-    # these four variables are not being used, please ignore
-    positive_angle_sum = 0.0 #downward
-    negative_angle_sum = 0.0 #upward
-    positive_count = 0
-    negative_count = 0
-    
-    # apply bilateral filter
-    filtered = bilateralFilter(image, 3)
-    #cv2.imshow('filtered',filtered)
+    contour_count = 0.0
 
-    # convert to grayscale and binarize the image by INVERTED binary thresholding
+    positive_angle_sum = 0.0
+    negative_angle_sum = 0.0
+    positive_count = 0.0
+    negative_count = 0.0
+
+    # Apply bilateral filter
+    filtered = bilateralFilter(image, 3)
+    # cv2.imshow('filtered',filtered)
+
+    # Convert to grayscale and binarize the image by INVERTED binary thresholding
     thresh = threshold(filtered, 120)
-    #cv2.imshow('thresh',thresh)
-    
-    # dilate the handwritten lines in image with a suitable kernel for contour operation
-    dilated = dilate(thresh, (5 ,100))
-    #cv2.imshow('dilated',dilated)
-    
+    # cv2.imshow('thresh', thresh)
+
+    # Dilate the handwritten lines in image with a suitable kernel for contour operation
+    dilated = dilate(thresh, (5, 100))
+    # cv2.imshow('dilated', dilated)
+
     ctrs,im2 = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    
+
     for i, ctr in enumerate(ctrs):
         x, y, w, h = cv2.boundingRect(ctr)
-        
-        # We can be sure the contour is not a line if height > width or height is < 20 pixels. Here 20 is arbitrary.
-        if h>w or h<MIN_HANDWRITING_HEIGHT_PIXEL:
+
+        # We can be sure the contour is not a line if height > width or height is < 20 pixels.
+        # Here 20 is arbitary.
+        if h>w or h<20:
             continue
-        
-        # We extract the region of interest/contour to be straightened.
+
+        # We extract the region of interest/ contour to be straightened.
         roi = image[y:y+h, x:x+w]
         #rows, cols = ctr.shape[:2]
-        
-        # If the length of the line is less than one third of the document width, especially for the last line,
-        # ignore because it may yeild inacurate baseline angle which subsequently affects proceeding features.
-        
-        if w < image.shape[1]/2 :
+
+        # If the length of the line is less than half the document width, especially for the last line, 
+        # ignore because it may yeild inacurate baseline angle which subsequently affects proceeding features. 
+        if w < image.shape[1]/2:
             roi = 255
             image[y:y+h, x:x+w] = roi
             continue
-
-        # minAreaRect is necessary for straightening
+        
+        # minAreaRect is necessary for straightening 
         rect = cv2.minAreaRect(ctr)
         center = rect[0]
         angle = rect[2]
-        #print "original: "+str(i)+" "+str(angle)
-        # I actually gave a thought to this but hard to remember anyway!
-        if angle < -45.0:
-            angle += 90.0;
-        #print "+90 "+str(i)+" "+str(angle)
-            
-        rot = cv2.getRotationMatrix2D(((x+w)/2,(y+h)/2), angle, 1)
-        #extract = cv2.warpAffine(roi, rot, (w,h), borderMode=cv2.BORDER_TRANSPARENT)
-        extract = cv2.warpAffine(roi, rot, (w,h), borderMode=cv2.BORDER_CONSTANT, borderValue=(255,255,255))
-        #cv2.imshow('warpAffine:'+str(i),extract)
+        # print("original: "+str(i)+" "+str(angle))
 
-        # image is overwritten with the straightened contour
+        # I actually gave a thought to this but hard to remember anyway
+        if angle < -45.0:
+            angle += 90.0
+        # print("+90"+str(i)+" "+str(angle))
+
+        rot = cv2.getRotationMatrix2D(((x+w)/2, (y+h)/2), angle, 1)
+
+        # extract = cv2.warpAffine(roi, rot, (w,h), borderMode=cv2.BORDER_TRANSPARENT)
+        extract = cv2.warpAffine(roi, rot, (w,h), borderMode = cv2.BORDER_CONSTANT, borderValue=(255,255,255))
+        
+        # Image is overwritten with the straightened contour 
         image[y:y+h, x:x+w] = extract
-        '''
-        # Please Ignore. This is to draw visual representation of the contour rotation.
-        box = cv2.boxPoints(rect)
-        box = np.int0(box)
-        cv2.drawContours(display,[box],0,(0,0,255),1)
-        cv2.rectangle(display,(x,y),( x + w, y + h ),(0,255,0),1)
-        '''
-        #print angle
+
+        print(angle)
         angle_sum += angle
         contour_count += 1
-    '''	
-        # sum of all the angles of downward baseline
-        if(angle>0.0):
-            positive_angle_sum += angle
-            positive_count += 1
-        # sum of all the angles of upward baseline
-        else:
-            negative_angle_sum += angle
-            negative_count += 1
-            
-    if(positive_count == 0): positive_count = 1
-    if(negative_count == 0): negative_count = 1
-    average_positive_angle = positive_angle_sum / positive_count
-    average_negative_angle = negative_angle_sum / negative_count
-    print "average_positive_angle: "+str(average_positive_angle)
-    print "average_negative_angle: "+str(average_negative_angle)
-    
-    if(abs(average_positive_angle) > abs(average_negative_angle)):
-        average_angle = average_positive_angle
-    else:
-        average_angle = average_negative_angle
-    
-    print "average_angle: "+str(average_angle)
-    '''
-    #cv2.imshow('contours', display)
-    
-    # mean angle of the contours (not lines) is found
-    mean_angle = angle_sum / contour_count
-    BASELINE_ANGLE = mean_angle
-    #print ("Average baseline angle: "+str(mean_angle))
-    return image
+
+        # mean angle of the contours (not lines) is found 
+        mean_angle = angle_sum / contour_count
+        BASELINE_ANGLE = mean_angle
+        # print("Average baseline angle: "+str(mean_angle))
+        return image
 
 ''' function to calculate horizontal projection of the image pixel rows and return it '''
 def horizontalProjection(img):
@@ -305,12 +274,12 @@ def extractLines(img):
         if(len(anchorPoints)<2):
             continue
         
-        '''
+        
         # the contour turns out to be an individual line
         if(len(anchorPoints)<=3):
             fineLines.append(line)
             continue
-        '''
+    
         # len(anchorPoints) > 3 meaning contour composed of multiple lines
         lineTop = line[0]
         for x in range(1, len(anchorPoints)-1, 2):
@@ -753,7 +722,10 @@ def start(file_name):
     global SLANT_ANGLE
 
     # read image from disk
-    image = cv2.imread('images/'+file_name)
+    try:
+        image = cv2.imread('Test Images/'+file_name)
+    except:
+        image = cv2.imread(file_name)
     #cv2.imshow(file_name,image)
     
     # Extract pen pressure. It's such a cool function name!
@@ -792,6 +764,15 @@ def start(file_name):
     WORD_SPACING = round(WORD_SPACING, 2)
     PEN_PRESSURE = round(PEN_PRESSURE, 2)
     SLANT_ANGLE = round(SLANT_ANGLE, 2)
+
+    print(BASELINE_ANGLE)
+    print(TOP_MARGIN)
+    print(LETTER_SIZE)
+    print(LINE_SPACING)
+    print(WORD_SPACING)
+    print(PEN_PRESSURE)
+    print(SLANT_ANGLE)
     
     return [BASELINE_ANGLE, TOP_MARGIN, LETTER_SIZE, LINE_SPACING, WORD_SPACING, PEN_PRESSURE, SLANT_ANGLE]
     
+start("a01-000x.png")

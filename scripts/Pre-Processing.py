@@ -307,9 +307,9 @@ def extractLines(img):
                 continue
             fineLines.append([lineTop, lineBottom])
             lineTop =  lineBottom
-        if(line[1]-lineTop < 20):
-            continue
-        fineLines.append([lineTop, line[1]])
+            if(line[1]-lineTop < 20):
+                continue
+            fineLines.append([lineTop, line[1]])
 
     # LINE SPACING and LETTER SIZE will be etracted here 
     # We will count the total number of pixel rows containing upper, 
@@ -380,7 +380,7 @@ def extractLines(img):
     print("Top margin relative to average letter Size: "+ 
     str(relative_top_margin))
     print("Average line spacing ralative to average letter size: "+ str(relative_line_spacing))
-
+    # print(fineLines)
     return fineLines
 
 # Function to extract words from the lines using vertical projection.
@@ -733,8 +733,8 @@ def barometer(image):
 def main():
     # read image from disk
     image = cv2.imread("Test Images/a01-000x.png")
-    image = cv2.resize(image, (700,700))
-    cv2.imshow('image', image)
+    # image = cv2.resize(image, (700,700))
+    # cv2.imshow('image', image)
     
     # Extract pen pressure. It's such a cool function name!
     #barometer(image)
@@ -760,7 +760,7 @@ def main():
     	cv2.imshow('item '+str(i), straightened[item[0]:item[1], item[2]:item[3]])
     
     # extract average slant angle of all the words containing a long vertical stroke
-    extractSlant(straightened, wordCoordinates)
+    # extractSlant(straightened, wordCoordinates)
     
     cv2.waitKey(0)
     return
