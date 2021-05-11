@@ -15,17 +15,17 @@ elif os.path.isfile("raw_feature_list"):
             raw_letter_size = float(content[2])
             raw_line_spacing = float(content[3])
             raw_word_spacing = float(content[4])
-            raw_pen_pressue = float(content[5])
+            raw_pen_pressure = float(content[5])
             raw_slant_angle = float(content[6])
             page_id = content[7]
 
-            baselin_angle, comment = categorize.determine_baseline_angle(raw_baseline_angle)
+            baseline_angle, comment = categorize.determine_baseline_angle(raw_baseline_angle)
             top_margin, comment = categorize.determine_top_margin(raw_top_margin)
             letter_size, comment = categorize.determine_letter_size(raw_letter_size)
             line_spacing, comment = categorize.determine_line_spacing(raw_line_spacing)
             word_spacing, comment  = categorize.determine_word_spacing(raw_word_spacing)
             pen_pressure, comment = categorize.determine_pen_pressure(raw_pen_pressure)
-            slant_angle, comment = categorize.determine_slant_angle(raw_slanit_angle)
+            slant_angle, comment = categorize.determine_slant_angle(raw_slant_angle)
 
             features.write("%s\t" % str(baseline_angle))
             features.write("%s\t" % str(top_margin))
