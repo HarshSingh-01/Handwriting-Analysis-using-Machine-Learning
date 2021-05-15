@@ -12,14 +12,14 @@ Human intervention has proven to be effective but it is time consuming and error
 - Machine Learning/Deep Learning
 
 # Features
-The proposed methodology extracts seven handwriting features namely :
-- top margin,
-- pen pressure,
-- baseline angle,
-- letter size,
-- line spacing,
-- word spacing and
-- slant angle.
+The proposed methodology extracts seven handwriting features namely:
+- top margin
+- pen pressure
+- baseline angle
+- letter size
+- line spacing
+- word spacing 
+- slant angle
 
 The combination of above mentioned seven features/vectors are used to predict the personality of the individual from the eight selected personality traits:
 - Emotional Stability
