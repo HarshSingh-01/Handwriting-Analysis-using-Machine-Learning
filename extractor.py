@@ -49,17 +49,17 @@ def horizontalProjection(img):
         row = img[j:j+1, 0:w] # y1:y2, x1:x2
         sumRows.append(np.sum(row))
     return sumRows
-    
-# Function to calculate vertical projection of the image pixel columns and return it.
+
+# Function to claculate vertical projection of the image pixel columns and return it.
 def verticalProjection(img):
     # Return a list containing the sum of the pixels in each column
-    (h, w) = img.shape[:2]
+    (h,w) = img.shape[:2]
     sumCols = []
     for j in range(w):
-        col = img[0:h, j:j+1] # y1:y2, x1:x2
+        col = img[0:h, j:j+1]
         sumCols.append(np.sum(col))
     return sumCols
-
+    
 # Function for finding contours and straightening them horizontally. 
 # Straightened lines will give better result with horizontal projections. 
 def straighten(image):
@@ -133,9 +133,9 @@ def straighten(image):
         # mean angle of the contours (not lines) is found 
         mean_angle = angle_sum / contour_count
         BASELINE_ANGLE = mean_angle
-        print("Average baseline angle: "+str(mean_angle))
-        # cv2.imshow("straightend",image)
+        # print("Average baseline angle: "+ str(mean_angle))
         return image
+
 
 def extractLines(img):
 
@@ -147,7 +147,7 @@ def extractLines(img):
     # img = cv2.imread("C:\\Users\Harsh\Desktop\Projects\Handwriting-Analysis-using-Machine-Learning\Test Images/a01-000u.png")
     # img = cv2.resize(img, (1280,720))
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#     gray = gray[int(img.shape[0]/5.5):int(img.shape[0]/1.27), 0:img.shape[1]]
+    # gray = gray[int(img.shape[0]/5.5):int(img.shape[0]/1.27), 0:img.shape[1]]
 
     ## (2) threshold
     th, threshed = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV|cv2.THRESH_OTSU)
@@ -175,8 +175,8 @@ def extractLines(img):
 
     average_letter_size = 0
     average_line_space = 0
-    print(uppers[0])
-    print(lowers[0])
+    # print(uppers[0])
+    # print(lowers[0])
     for i in range(0, len(uppers)):
         average_letter_size = average_letter_size + (lowers[i] - uppers[i])
         if (i<(len(uppers)-1)):
@@ -190,9 +190,9 @@ def extractLines(img):
     TOP_MARGIN = top_margin/average_letter_size
     LETTER_SIZE = average_letter_size
     LINE_SPACING = average_line_space/average_letter_size
-    print("Top Margin", TOP_MARGIN)
-    print("Letter size",LETTER_SIZE)
-    print("Line Spacing", LINE_SPACING)
+    # print("Top Margin", TOP_MARGIN)
+    # print("Letter size",LETTER_SIZE)
+    # print("Line Spacing", LINE_SPACING)
 
 
 
@@ -203,7 +203,7 @@ def extractLines(img):
     for y in lowers:
         cv2.line(rotated, (0,y), (W, y), (0,255,0), 1)
 
-    cv2.imshow("result.png", rotated)
+    # cv2.imshow("result.png", rotated)
     return [uppers,lowers]
 
 ''' function to extract words from the lines using vertical projection '''
@@ -294,8 +294,8 @@ def extractWords(image, lines):
     average_word_spacing = float(space_columns) / space_count
     relative_word_spacing = average_word_spacing / LETTER_SIZE
     WORD_SPACING = relative_word_spacing
-    print("Average word spacing: "+str(average_word_spacing))
-    print ("Average word spacing relative to average letter size: "+str(relative_word_spacing))
+    # print("Average word spacing: "+str(average_word_spacing))
+    # print ("Average word spacing relative to average letter size: "+str(relative_word_spacing))
     
     return words
 
@@ -487,33 +487,33 @@ def extractSlant(img, words):
 #             result =  " : Irregular slant behaviour"
         
         
-        if angle == 0:
-            print("\n************************************************")
-            print("Slant determined to be straight.")
-        else:
-            print("\n************************************************")
-            print("Slant determined to be irregular.")
-        cv2.imshow("Check Image", img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-#         type = input("Press enter if okay, else enter c to change: ")
-        if type=='c':
-            if angle == 0:
-                angle = 180
-                result =  " : Irregular Slant"
-                print("Set as"+result)
-                print("************************************************\n")
-            else:
-                angle = 0
-                result = " : Straight/No Slant"
-                print("Set as"+result)
-                print("************************************************\n")
-        else:
-            print("No Change!")
-            print("************************************************\n")
+#         if angle == 0:
+#             print("\n************************************************")
+#             print("Slant determined to be straight.")
+#         else:
+#             print("\n************************************************")
+#             print("Slant determined to be irregular.")
+#         # cv2.imshow("Check Image", img)
+#         cv2.waitKey(0)
+#         cv2.destroyAllWindows()
+# #         type = input("Press enter if okay, else enter c to change: ")
+#         if type=='c':
+#             if angle == 0:
+#                 angle = 180
+#                 result =  " : Irregular Slant"
+#                 print("Set as"+result)
+#                 print("************************************************\n")
+#             else:
+#                 angle = 0
+#                 result = " : Straight/No Slant"
+#                 print("Set as"+result)
+#                 print("************************************************\n")
+        # else:
+        #     print("No Change!")
+        #     print("************************************************\n")
         
     SLANT_ANGLE = angle
-    print ("Slant angle(degree): "+str(SLANT_ANGLE))
+    # print ("Slant angle(degree): "+str(SLANT_ANGLE))
     return
 
 # Function to extract average pen pressure of the handwriting.
@@ -567,7 +567,14 @@ def start(img):
     global PEN_PRESSURE
     global SLANT_ANGLE
 
-    img = cv2.imread(img)
+    img_path = "C:\\Users\Harsh\Desktop\Projects\Handwriting-Analysis-using-Machine-Learning\Test Images/" + img
+
+    img = cv2.imread(img_path)
+    # H, W = img.shape[:2]
+    # img = cv2.resize(img, (600,700))
+    # img = img[int(H/5.5):int(H/1.27), int(W/2.2):int(W/1.2)]
+    
+    # cv2.imshow("Image", img)
     
     # Base Line angle
     straightened = straighten(img)
@@ -576,34 +583,34 @@ def start(img):
     lines = extractLines(straightened)
 
     # Word Spacing
-    words = extractWords(img, lines)
+    words = extractWords(straightened, lines)
     
     # Slant angle
-    extractSlant(img, words)
+    extractSlant(straightened, words)
     
     # Pen Pressure
-    barometer(img)
+    # barometer(straightened)
 
     BASELINE_ANGLE = round(BASELINE_ANGLE, 2)
     TOP_MARGIN = round(TOP_MARGIN, 2)
     LETTER_SIZE = round(LETTER_SIZE, 2)
     LINE_SPACING = round(LINE_SPACING, 2)
     WORD_SPACING = round(WORD_SPACING, 2)
-    PEN_PRESSURE = round(PEN_PRESSURE, 2)
+    # PEN_PRESSURE = round(PEN_PRESSURE, 2)
     SLANT_ANGLE = round(SLANT_ANGLE, 2)
 
-    print(BASELINE_ANGLE)
-    print(TOP_MARGIN)
-    print(LETTER_SIZE)
-    print(LINE_SPACING)
-    print(WORD_SPACING)
-    print(PEN_PRESSURE)
-    print(SLANT_ANGLE)
+    # print("Base_line Angle: ", BASELINE_ANGLE)
+    # print("Top_margin: ", TOP_MARGIN)
+    # print("Letter_Size: ", LETTER_SIZE)
+    # print("Line_Spacing: ", LINE_SPACING)
+    # print("Word_Spacing: ",WORD_SPACING)
+    # print("Pen_pressure: ",PEN_PRESSURE)
+    # print("Slant_Angle: ",SLANT_ANGLE)
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     
-    return [BASELINE_ANGLE, TOP_MARGIN, LETTER_SIZE, LINE_SPACING, WORD_SPACING, PEN_PRESSURE, SLANT_ANGLE]
+    return [BASELINE_ANGLE, TOP_MARGIN, LETTER_SIZE, LINE_SPACING, WORD_SPACING, SLANT_ANGLE]
     
 
-start("C:\\Users\Harsh\Desktop\Projects\Handwriting-Analysis-using-Machine-Learning\Test Images/a01-007.png")
+# print(start("a01-003u.png"))
