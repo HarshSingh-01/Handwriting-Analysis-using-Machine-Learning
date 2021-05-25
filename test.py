@@ -70,3 +70,4 @@ def predict(file_name):
 
     print("#----------------x-----------x------------x---------x-------------x-----------x------------#")
 
+predict("C:\\Users\Harsh\Desktop\Projects\Handwriting-Analysis-using-Machine-Learning\Test Images/Img (3).png")

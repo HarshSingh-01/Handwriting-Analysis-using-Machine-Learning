@@ -557,7 +557,7 @@ def barometer(image):
 
     return 
 
-def start(img):
+def start(img_path):
 
     global BASELINE_ANGLE
     global TOP_MARGIN
@@ -567,7 +567,7 @@ def start(img):
     global PEN_PRESSURE
     global SLANT_ANGLE
 
-    img_path = "C:\\Users\Harsh\Desktop\Projects\Handwriting-Analysis-using-Machine-Learning\Test Images/" + img
+    # img_path = "C:\\Users\Harsh\Desktop\Projects\Handwriting-Analysis-using-Machine-Learning\Test Images/" + img_path
 
     img = cv2.imread(img_path)
     # H, W = img.shape[:2]
@@ -613,4 +613,7 @@ def start(img):
     return [BASELINE_ANGLE, TOP_MARGIN, LETTER_SIZE, LINE_SPACING, WORD_SPACING, SLANT_ANGLE]
     
 
-# print(start("a01-003u.png"))
+# img = "sample.png"
+# img_path = "C:\\Users\Harsh\Desktop\Projects\Handwriting-Analysis-using-Machine-Learning\Test Images/" + img
+
+# print(start(img_path))
