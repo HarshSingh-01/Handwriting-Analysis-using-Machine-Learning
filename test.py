@@ -1,12 +1,14 @@
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import pickle
 # from PythonScripts import extract
 import categorize
 import extractor
 
 model_folder_path = "C:\\Users\Harsh\Desktop\Projects\Handwriting-Analysis-using-Machine-Learning\models"
-
+test_path = "C:\\Users\Harsh\Desktop\Projects\Handwriting-Analysis-using-Machine-Learning\Test Images/"
 
 def predict(file_name):
 
@@ -29,7 +31,7 @@ def predict(file_name):
     clf8 = pickle.load(open(filename8, 'rb'))    
 
     raw_features = extractor.start(file_name)
-
+    print("\nHandwritting Features\n")
     raw_baseline_angle = raw_features[0]
     baseline_angle, comment = categorize.determine_baseline_angle(raw_baseline_angle)
     print("Baseline Angle: "+comment)
@@ -58,16 +60,62 @@ def predict(file_name):
     slant_angle, comment = categorize.determine_slant_angle(raw_slant_angle)
     print("Slant Angle: "+ comment)
 
-    print()
-    print("Emotional Stability: ", clf1.predict([[baseline_angle, slant_angle]]))
-    # print("Mental Energy or Will Power: ", clf2.predict([[letter_size, pen_pressure]]))
-    print("Modesty: ", clf3.predict([[letter_size, top_margin]]))
-    print("Personal Harmony and Flexibility: ", clf4.predict([[line_spacing, word_spacing]]))
-    print("Lack of Discipline: ", clf5.predict([[slant_angle, top_margin]]))
-    print("Poor Concentration: ", clf6.predict([[letter_size, line_spacing]]))
-    print("Non Communicativeness: ", clf7.predict([[letter_size, word_spacing]]))
-    print("Social Isolation: ", clf8.predict([[line_spacing, word_spacing]]))
+    print("\nPersonality Traits\n")
+    if bool(clf1.predict([[baseline_angle, slant_angle]])[0]):
+        a = "Present"
+    else:
+        a = "Absent"
+    print("Emotional Stability: ", a)
+
+    # if bool(clf2.predict([[letter_size, pen_pressure]])[0]):
+    #     a = "Present"
+    # else:
+    #     a = "Absent"
+    # print("Mental Energy or Will Power: ", a)
+
+    if bool(clf3.predict([[letter_size, top_margin]])[0]):
+        a = "Present"
+    else:
+        a = "Absent"
+    print("Modesty: ", a)
+
+    if bool(clf4.predict([[line_spacing, word_spacing]])[0]):
+        a = "Present"
+    else:
+        a = "Absent"
+    print("Personal Harmony and Flexibility: ", a)
+
+    if bool(clf5.predict([[slant_angle, top_margin]])[0]):
+        a = "Present"
+    else:
+        a = "Absent"
+    print("Lack of Discipline: ", a)
+
+    if bool(clf6.predict([[letter_size, line_spacing]])[0]):
+        a = "Present"
+    else:
+        a = "Absent"
+    print("Poor Concentration: ", a)
+
+    if bool(clf7.predict([[letter_size, word_spacing]])[0]):
+        a = "Present"
+    else:
+        a = "Absent"
+    print("Non Communicativeness: ", a)
+
+    if bool(clf8.predict([[line_spacing, word_spacing]])[0]):
+        a = "Present"
+    else:
+        a = "Absent"
+    print("Social Isolation: ", a)
 
     print("#----------------x-----------x------------x---------x-------------x-----------x------------#")
 
-predict("C:\\Users\Harsh\Desktop\Projects\Handwriting-Analysis-using-Machine-Learning\Test Images/Img (3).png")
+def output(Image):
+    path = test_path + Image
+    predict(path)
+    # img = mpimg.imread(path)
+    # imgplot = plt.imshow(img)
+    # plt.show()
+
+# output("Img (7).jpg")
