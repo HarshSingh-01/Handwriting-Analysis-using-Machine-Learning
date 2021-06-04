@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import math
-#from matplotlib import pyplot as plt
+
 
 # please don't worry about these variables now
 ANCHOR_POINT = 6000
@@ -99,8 +99,10 @@ def straighten(image):
         # print("original: "+str(i)+" "+str(angle))
 
         # I actually gave a thought to this but hard to remember anyway
-        if angle < -45.0:
-            angle += 90.0
+        if angle < -45:
+            angle = -(90 + angle)
+        else:
+            angle = -angle
         # print("+90"+str(i)+" "+str(angle))
 
         rot = cv2.getRotationMatrix2D(((x+w)/2, (y+h)/2), angle, 1)
