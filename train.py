@@ -3,8 +3,11 @@ import pickle
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-import extractor
-import categorize
+from scripts import extractor
+from scripts import categorize
+
+import warnings
+warnings.filterwarnings("ignore")
 
 X_baseline_angle = []
 X_top_margin = []
@@ -24,8 +27,9 @@ y_t7 = []
 y_t8 = []
 page_ids = []
 
-label_list = "C:\\Users\Harsh\Desktop\Projects\Handwriting-Analysis-using-Machine-Learning\Extracted_Features/label_list.txt"
-model_folder_path = "C:\\Users\Harsh\Desktop\Projects\Handwriting-Analysis-using-Machine-Learning\models"
+label_list = "C:\\Users\Harsh\Desktop\Projects\Handwriting-Analysis-using-Machine-Learning\scripts\Extracted_Features\label_list.txt"
+# model_folder_path = "models/rbf"
+model_folder_path = "models/poly"
 
 if os.path.isfile(label_list):
     print("Info: label_list found.")
@@ -129,7 +133,7 @@ if os.path.isfile(label_list):
 
     #---------x----------x------------x--------------x---------------x---------------x---------------#
     X_train, X_test, y_train, y_test = train_test_split(X_t1, y_t1, test_size = .30, random_state=8)
-    clf1 = SVC(kernel='rbf')
+    clf1 = SVC(kernel='poly')
     clf1.fit(X_train, y_train)
     print("Classifier 1 accuracy: ",accuracy_score(clf1.predict(X_test), y_test))
     filename1 = model_folder_path + "\clf1.sav"
@@ -144,42 +148,42 @@ if os.path.isfile(label_list):
     # pickle.dump(clf2, open(filename2, 'wb'))
 	
     X_train, X_test, y_train, y_test = train_test_split(X_t3, y_t3, test_size = .30, random_state=32)
-    clf3 = SVC(kernel='rbf')
+    clf3 = SVC(kernel='poly')
     clf3.fit(X_train, y_train)
     print("Classifier 3 accuracy: ",accuracy_score(clf3.predict(X_test), y_test))
     filename3 = model_folder_path + "\clf3.sav"
     pickle.dump(clf3, open(filename3, 'wb'))
     
     X_train, X_test, y_train, y_test = train_test_split(X_t4, y_t4, test_size = .30, random_state=64)
-    clf4 = SVC(kernel='rbf')
+    clf4 = SVC(kernel='poly')
     clf4.fit(X_train, y_train)
     print("Classifier 4 accuracy: ",accuracy_score(clf4.predict(X_test), y_test))
     filename4 = model_folder_path + "\clf4.sav"
     pickle.dump(clf4, open(filename4, 'wb'))
     
     X_train, X_test, y_train, y_test = train_test_split(X_t5, y_t5, test_size = .30, random_state=42)
-    clf5 = SVC(kernel='rbf')
+    clf5 = SVC(kernel='poly')
     clf5.fit(X_train, y_train)
     print("Classifier 5 accuracy: ",accuracy_score(clf5.predict(X_test), y_test))
     filename5 = model_folder_path + "\clf5.sav"
     pickle.dump(clf5, open(filename5, 'wb'))
     
     X_train, X_test, y_train, y_test = train_test_split(X_t6, y_t6, test_size = .30, random_state=52)
-    clf6 = SVC(kernel='rbf')
+    clf6 = SVC(kernel='poly')
     clf6.fit(X_train, y_train)
     print("Classifier 6 accuracy: ",accuracy_score(clf6.predict(X_test), y_test))
     filename6 = model_folder_path + "\clf6.sav"
     pickle.dump(clf6, open(filename6, 'wb'))
     
     X_train, X_test, y_train, y_test = train_test_split(X_t7, y_t7, test_size = .30, random_state=21)
-    clf7 = SVC(kernel='rbf')
+    clf7 = SVC(kernel='poly')
     clf7.fit(X_train, y_train)
     print("Classifier 7 accuracy: ",accuracy_score(clf7.predict(X_test), y_test))
     filename7 = model_folder_path + "\clf7.sav"
     pickle.dump(clf7, open(filename7, 'wb'))
     
     X_train, X_test, y_train, y_test = train_test_split(X_t8, y_t8, test_size = .30, random_state=73)
-    clf8 = SVC(kernel='rbf')
+    clf8 = SVC(kernel='poly')
     clf8.fit(X_train, y_train)
     print("Classifier 8 accuracy: ",accuracy_score(clf8.predict(X_test), y_test))
     filename8 = model_folder_path + "\clf8.sav"
