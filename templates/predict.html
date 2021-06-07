@@ -1,0 +1,38 @@
+{% extends 'base.html'%}
+
+{% block title %}
+Predict
+{% endblock %}
+
+{% block content%}
+<div class='prediction-class'>
+    <h1 class="text-center">Personality Traits</h1>
+<div class="container text-center">
+    <div class="row">
+        <!-- <div class="col">
+                    <h5 class="text-center">Handwriting Features</h5>
+                    <hr>
+                    <p>
+                        {% for key, values in predictions["features"].items() %}
+                    <p><strong>{{key}}</strong>: {{ values}}</p>
+                    {% endfor %}
+                    </p>
+        </div> -->
+        <div class="col">
+                <hr>
+                <p>
+                    {% for key, values in predictions["traits"].items() %}
+                <p><strong>{{key}}</strong>: {{ values}}</p>
+                {% endfor %}
+                </p>
+                </div>
+        </div> 
+    </div>
+    <div class='text-center button-class'>
+        <a href="{{ url_for('home_page') }}" class="btn btn-primary">Back to Home</a>
+    </div>
+</div>
+
+
+
+{% endblock %}
