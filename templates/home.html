@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Home Page
+{% endblock %}
+
+{% block content %}
+    <!-- Title -->
+    <section id="title">
+        <div class="container-fluid">
+            <nav class="navbar navbar-expand-lg navbar-dark text-center">
+                <a class="navbar-brand" href="#">Handwriting Analysis</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#title">Abstract <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#intro">Graphology</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#applications">Applications</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contributors">Contributors</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} message-class">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            <!-- Title -->
+            <div class="row title-class">
+                <div class="col-lg-8">
+                    <h2>Abstract</h2>
+                    <p>Handwriting Analysis or Graphology is the science of identifying, evaluating and revealing the personality of an
+                    individual through patterns and strokes hidden in the handwriting. It includes examining the features such as size of
+                    letters and words, spacing between the letters and words, pen pressure, margins, slant angle. Based on these features a
+                    person’s traits are judged as whether he/she is an introvert or extrovert, his/her social skills, discipline, and
+                    emotional stability. This project puts forward a methodology using Machine Learning Algorithms to analyse the
+                    handwriting samples since manual approach is quite expensive and error prone. The present study immensely uses OpenCV
+                    for image preprocessing while sci-kit for training and testing the model.</p>
+                </div>
+                
+                <div class="col-lg-4 upload-class text-center">
+                    <h3>Upload Here to test your personality.</h3>
+                    <form class="upload-form" action="/predict" method="post" enctype="multipart/form-data">
+                        <img src="" id="preview" alt="" width="250px" style="
+                            padding-bottom: 20px;">
+                            <br>
+                        <input type="file" id="img" name="file1" style="display:none;" accept="image/*" onchange="previewImage();">
+                        <label for="img" class="btn btn-light" style="margin-bottom: 0px;">Choose File</label>
+                        <button type="Upload" class="btn btn-primary"><i class="fas fa-upload"></i> Upload</button>
+                    </form>                    
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="intro">
+        <div class="intro-class">
+            <h2>Graphology</h2>
+            <p>Graphology or Handwriting analysis is defined as the examination of the physical characteristics and handwriting
+            patterns in order to understand the cognitive patterns and the state of mind of a person. The handwriting of a person is
+            used to identify, evaluate, and understand the emotional state and temperament of a person. Graphologists or Handwriting
+            experts identify strokes, spaces, patterns, margins, pressure etc. to predict the personality traits of a person which
+            are represented by neurological brain patterns. These brain patterns contribute exceptional neuromuscular movements
+            which are common to everyone with the inherited personality trait. These handwriting patterns reflect the subconscious
+            state of mind of an individual.</p>
+</p>
+        </div>
+    </section>
+    <section id="applications">
+        <div class="app-class">
+        <h3>Applications</h3>
+        <ul>
+            <li>
+            <p><strong>Personal Relationships</strong></p>
+            <p>Handwriting is analyzed to check compatibility in all types of personal relationships. Where family members are
+            incompatible or find themselves in situations of conflict, an analysis of their handwritings will highlight the areas
+            where personality clashes occur.</p>
+            </li>
+
+            <li>
+                <p><strong>In Education</strong></p>
+                <p>Handwriting Analysis is valuable in the field of education and in the counselling of students. It is particularly useful
+                where interaction between teachers and pupils or between the pupils themselves is problematic.</p>
+                <p>
+                Children under-achieve because of low self-esteem and other personality problems. An analysis of handwriting can help us
+                to discover and encourage latent skills or talents that might have gone unnoticed.
+</p>
+            </li>
+
+            <li>
+                <p><strong>Job Applications</strong></p>
+                <p>For job seekers handwriting analysis provides an added bonus in that it requires no painful or embarrassing interviews
+                which a sensitive candidate is likely to see as an invasion of privacy.
+                </p>
+                <p>Because of nervousness, an otherwise perfectly qualified applicant may not be able to do justice to an interview. As a
+                result, the employer may end up with a completely incorrect assessment of the applicant's suitability for the post.</p>
+            </li>
+        </ul>
+</div>
+    </section>
+
+    <section id="contributors" class="text-center">
+        <h3>Contributors</h3>
+        <div class="row contri-class">
+            <div class="col">
+                <p><strong>Ritika Jain</strong></p>
+                <p>Student</p>
+                <p>EEE, ADGITM</p>
+                <p>jainritika181999@gmail.com</p>
+            </div>
+            <div class="col">
+            <p><strong>Harsh Singh</strong></p>
+            <p>Student</p>
+            <p>EEE, ADGITM</p>
+            <p>harshkushwah2011@gmail.com</p>
+            </div>
+            <div class="col">
+                <p><strong>Simran Goyal</strong></p>
+                <p>Student</p>
+                <p>EEE, ADGITM</p>
+               <p>simrangoyal112@gmail.com</p> 
+            </div>
+            <div class="col">
+                <p><strong>Srishti Nawani</strong></p>
+                <p>Student</p>
+                <p>EEE, ADGITM</p>
+                <p>nawani.sri@gmail.com</p>
+            </div>
+            <div class="col">
+                <p><strong>Dr. Parthish Kumar Paul</strong></p>
+                <p>Asst. Professor</p>
+                <p>EEE, ADGITM</p>
+                <p>parthish.k@gmail.com</p>
+                <p></p>
+            </div>
+        </div>
+        <br>
+        <h6>&#169 ADGITM 2021</h6>
+    </section>
+    
+{% endblock %}

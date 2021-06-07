@@ -1,0 +1,73 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+p {
+  margin: 10px;
+}
+
+.message-class {
+  color: black;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  border-style: none;
+}
+.container-fluid {
+  padding: 0;
+}
+
+/* Abstract */
+#title {
+  color: #fff5eb;
+}
+
+.navbar {
+  background-color: #145c5d;
+  /* background-color: #bad7df; */
+}
+
+.navbar-brand {
+  padding-left: 5%;
+}
+
+.collapse {
+  padding-left: 42%;
+}
+
+.abstract-class {
+  background-color: #28b5b5;
+  /* background-color: ; */
+  padding: 0 5% 0 7%;
+}
+.upload-class {
+  margin: 0;
+  padding: 0px 0 50px 0;
+}
+
+.upload-form {
+  padding: 30px 0 30px 0;
+}
+
+/* Graphology */
+
+.intro-class {
+  padding: 0 7% 2% 7%;
+  background-color: #f7f7f7;
+}
+
+#applications {
+  background-color: #28b5b5;
+}
+
+.method-class {
+  padding: 0, 7%, 0, 7%;
+}
+
+.app-class {
+  color: #fff5eb;
+  padding: 0 7% 0 7%;
+}

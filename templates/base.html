@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}
+        {% endblock %}
+    </title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css')}} ">
+    
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"
+        integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF"
+        crossorigin="anonymous"></script>
+    
+    <!-- Google Fonts  -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Ubuntu:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+</head>
+<body>
+    {% block content %}
+
+    {% endblock %}    
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+</body>
+<style>
+    html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; 
+}
+
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Ubuntu', sans-serif;
+}
+
+p {
+  font-family: 'Montserrat', sans-serif;
+   margin: 10px 0 10px 0; 
+}
+
+ul {
+    margin: 0;
+}
+
+.message-class {
+  color: black;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  border-style: none;
+}
+.container-fluid {
+  padding: 0;
+}
+
+/* Abstract */
+#title {
+  color: #fff5eb;
+}
+
+.navbar {
+  background-color: #145c5d;
+  /* background-color: #bad7df; */
+}
+
+.navbar-brand {
+  padding-left: 5%;
+}
+
+.collapse {
+  padding-left: 45%;
+}
+
+.title-class {
+  background-color: #28b5b5;
+  /* background-color: ; */
+  padding: 1% 2% 1% 7%;
+}
+.upload-class {
+  margin: auto;
+}
+
+/* Graphology */
+
+.intro-class {
+  padding: 1% 7% 1% 7%;
+  background-color: #f7f7f7;
+}
+
+/* Applications */
+#applications {
+  background-color: #28b5b5;
+}
+
+.app-class {
+  color: #fff5eb;
+  padding: 1% 7% 1% 7%;
+}
+
+/* Contributors */
+#contributors {
+    padding: 1% 2% 1% 2%;
+  background-color: #f7f7f7;
+}
+
+.contri-class p {
+   margin: 0.5% 0 0.5% 0;
+}
+
+.contri-class div {
+    padding: 10px;
+}
+
+/* Prediction */
+.prediction-class {
+    background-color: #f7f7f7;
+    padding: 5% 0 10% 0;
+}
+
+.button-class {
+  padding: 2% 0 0 0;
+}
+</style>
+
+</html>
