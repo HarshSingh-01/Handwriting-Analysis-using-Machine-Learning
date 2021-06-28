@@ -11,6 +11,8 @@ Human intervention has proven to be effective but it is time consuming and error
 - OpenCV
 - Machine Learning/Deep Learning
 
+# Input & Output
+![](/uploads/I-O.PNG)
 # Features
 The proposed methodology extracts seven handwriting features namely:
 - top margin
