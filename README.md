@@ -23,6 +23,9 @@ The proposed methodology extracts seven handwriting features namely:
 - word spacing 
 - slant angle
 
+# Visualizations
+![](/uploads/results.PNG)
+
 The combination of above mentioned seven features/vectors are used to predict the personality of the individual from the eight selected personality traits:
 - Emotional Stability
 - Mental Energy or Will Power
